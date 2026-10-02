@@ -13,7 +13,8 @@ def login_user(login, password):
         )
         row = cursor.fetchone()
         if row:
-            current_user = User(row, row, row, row)
+            # Исправлено: передаем элементы кортежа по индексам
+            current_user = User(row[0], row[1], row[2], row[3])
             return True
         return False
 
