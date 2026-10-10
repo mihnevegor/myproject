@@ -9,7 +9,6 @@ def init_db():
     with get_connection() as conn:
         cursor = conn.cursor()
         
-        # Таблица пользователей
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,18 +18,18 @@ def init_db():
             )
         """)
         
-        # Таблица дежурств
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS duties (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 first_name TEXT NOT NULL,
                 last_name TEXT NOT NULL,
+                middle_name TEXT NOT NULL DEFAULT '',
                 room TEXT NOT NULL,
-                datetime_str TEXT NOT NULL
+                datetime_str TEXT NOT NULL,
+                time_end TEXT NOT NULL DEFAULT '00:00'
             )
         """)
         
-        # Создание предустановленных аккаунтов, если таблица пуста
         cursor.execute("SELECT COUNT(*) FROM users")
         if cursor.fetchone()[0] == 0:
             accounts = [
@@ -38,8 +37,5 @@ def init_db():
                 ("user1", "user123", "user"),
                 ("user2", "user123", "user")
             ]
-            cursor.executemany(
-                "INSERT INTO users (login, password, role) VALUES (?, ?, ?)", 
-                accounts
-            )
+            cursor.executemany("INSERT INTO users (login, password, role) VALUES (?, ?, ?)", accounts)
         conn.commit()
